@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        List<String> strings = Arrays.asList("123", "456", "789", "124", "346", "568", "780", "135", "246", "481");
+        List<String> strings = Arrays.asList("header 1", "123", "456", "header 2", "789", "124", "346", "568", "780", "header 3", "135", "246", "481");
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

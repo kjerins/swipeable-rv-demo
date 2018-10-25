@@ -16,9 +16,26 @@ import com.chauthai.swipereveallayout.ViewBinderHelper;
 import java.util.List;
 import java.util.Random;
 
-public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+public class Adapter extends RecyclerView.Adapter<Adapter.SuperViewHolder> {
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    static class SuperViewHolder extends RecyclerView.ViewHolder {
+
+        SuperViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+    }
+
+    static class HeaderViewHolder extends SuperViewHolder {
+
+        TextView header;
+
+        HeaderViewHolder(@NonNull View itemView) {
+            super(itemView);
+            header = itemView.findViewById(R.id.textView2);
+        }
+    }
+
+    static class ViewHolder extends SuperViewHolder {
 
         TextView textView;
         ViewGroup mainPanel;
@@ -34,6 +51,9 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         }
     }
 
+    private static final int ITEM_TYPE_HEADER = 1;
+    private static final int ITEM_TYPE_ITEM = 2;
+
     private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
 
     private List<String> strings;
@@ -43,43 +63,62 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         viewBinderHelper.setOpenOnlyOne(true);
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        String item = strings.get(position);
+        if (item.length() == 3) {
+            return ITEM_TYPE_ITEM;
+        }
+        return ITEM_TYPE_HEADER;
+    }
+
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new ViewHolder(LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.card_item, viewGroup, false));
+    public SuperViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int itemType) {
+        if (itemType == ITEM_TYPE_ITEM) {
+            return new ViewHolder(LayoutInflater.from(viewGroup.getContext())
+                    .inflate(R.layout.card_item, viewGroup, false));
+        } else {
+            return new HeaderViewHolder(LayoutInflater.from(viewGroup.getContext())
+                    .inflate(R.layout.card_header, viewGroup, false));
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull SuperViewHolder viewHolder, int i) {
         String dataObject = strings.get(i);
 
-        viewBinderHelper.bind((SwipeRevealLayout) viewHolder.itemView, dataObject.toString());
+        if (getItemViewType(i) == ITEM_TYPE_ITEM) {
+            viewBinderHelper.bind((SwipeRevealLayout) viewHolder.itemView, dataObject.toString());
 
-        viewHolder.textView.setText(dataObject);
-        Random random = new Random();
-        int r = random.nextInt(3);
-        int backgroundId = 0;
-        if (r == 0) {
-            backgroundId = R.drawable.gradient_red;
-        } else if (r == 1) {
-            backgroundId = R.drawable.gradient_green;
+            ViewHolder vh = (ViewHolder) viewHolder;
+            vh.textView.setText(dataObject);
+            Random random = new Random();
+            int r = random.nextInt(3);
+            int backgroundId = 0;
+            if (r == 0) {
+                backgroundId = R.drawable.gradient_red;
+            } else if (r == 1) {
+                backgroundId = R.drawable.gradient_green;
+            } else {
+                backgroundId = R.drawable.gradient_blue;
+            }
+            vh.mainPanel.setBackgroundResource(backgroundId);
+            vh.yesButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(), "Pressed yes!", Toast.LENGTH_LONG).show();
+                }
+            });
+            vh.noButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(), "Pressed no!", Toast.LENGTH_LONG).show();
+                }
+            });
         } else {
-            backgroundId = R.drawable.gradient_blue;
+            ((HeaderViewHolder) viewHolder).header.setText(dataObject);
         }
-        viewHolder.mainPanel.setBackgroundResource(backgroundId);
-        viewHolder.yesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(v.getContext(), "Pressed yes!", Toast.LENGTH_LONG).show();
-            }
-        });
-        viewHolder.noButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(v.getContext(), "Pressed no!", Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
     @Override
