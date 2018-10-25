@@ -17,11 +17,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        List<String> strings = Arrays.asList("header 1", "123", "456", "header 2", "789", "124", "346", "568", "780", "header 3", "135", "246", "481");
+        List<Item> items = Arrays.asList(new Item("header 1"), new Item("123"), new Item("456"), new Item("header 2"), new Item("789"), new Item("124"), new Item("346"), new Item("568"), new Item("780"), new Item("header 3"), new Item("135"), new Item("246"), new Item("481"));
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new Adapter(strings);
+        adapter = new Adapter(items);
         recyclerView.setAdapter(adapter);
     }
 
